@@ -50,7 +50,7 @@ def run_KMedoids_on_data(data_list, K_range, path="data"):
 
         fig, axes = plt.subplots(2, 2, figsize=(9, 8))
 
-        sns.lineplot(data=pd.DataFrame(data={"y": scores, "x": K_list}), x="x", y="y",
+        sns.lineplot(data=pd.DataFrame(data={"y": scores, "x": K_range}), x="x", y="y",
                      ax=axes[0, 0])
         make_plot(X, y, axes=axes[0, 1], title="Target")
         make_plot(X, kmedoids_alternate.labels_, axes=axes[1, 0], title="Prediction Alternate")
