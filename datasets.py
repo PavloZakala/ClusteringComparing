@@ -44,6 +44,11 @@ def __gaussian_data(n_samples=1500, k=3, dim=2, cluster_std=None, locations=None
     return np.array(X), np.array(y)
 
 
+def test_gaussian_data(n_samples, k, random_state=42):
+    cluster_std = [0.2 * 3 / k] * k
+    return __gaussian_data(n_samples, k, cluster_std=cluster_std, random_state=random_state)
+
+
 def get_data_blobs(n_samples=1500, **kwargs):
     X, y = datasets.make_blobs(n_samples=n_samples, random_state=8)
     return X, y + 1
@@ -440,7 +445,8 @@ if __name__ == '__main__':
         else:
             plt.title(title)
 
-    for X, y in [get_data_unbalance5()]:
+
+    for X, y in [test_gaussian_data_random(1500, 15)]:
         # For 2d plots
         make_plot(X, y)
 
