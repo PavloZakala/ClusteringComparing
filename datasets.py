@@ -48,6 +48,9 @@ def test_gaussian_data(n_samples, k, random_state=42):
     cluster_std = [0.2 * 3 / k] * k
     return __gaussian_data(n_samples, k, cluster_std=cluster_std, random_state=random_state)
 
+def test_gaussian_data_v2(n_samples, k, random_state=42):
+    cluster_std = [0.15 / k] * k
+    return __gaussian_data(n_samples, k, cluster_std=cluster_std, random_state=random_state)
 
 def get_data_blobs(n_samples=1500, **kwargs):
     X, y = datasets.make_blobs(n_samples=n_samples, random_state=8)
@@ -156,7 +159,7 @@ def get_gaussian_data_3d(n_samples=1500, random_state=14, **kwargs):
 
     return np.array(X), np.array(y)
 
-
+GAUSSIAN_BLOBS_K = [3, 3, 3, 4, 15, 31, 3, 4, 15]
 GAUSSIAN_BLOBS_DATA = [get_data_blobs, get_data_blobs2, get_data_blobs3,
                        get_data_blobs4, get_data_R15, get_data_d31,
                        get_data_blobs2_noise, get_data_blobs4_noise, get_data_R15_noise]
@@ -226,7 +229,7 @@ def get_data_unbalance6(**kwargs):
 
     return np.concatenate((noise, X)), np.concatenate((y_noise, y))
 
-
+UNBALANCED_GAUSSIAN_BLOBS_K = [3, 5, 5, 5, 9, 5]
 UNBALANCED_GAUSSIAN_BLOBS_DATA = [get_data_unbalance1, get_data_unbalance2, get_data_unbalance3,
                                   get_data_unbalance4, get_data_unbalance5, get_data_unbalance6]
 
@@ -346,7 +349,7 @@ def get_data_cube6(n_samples=1500, random_state=73, **kwargs):
 
     return np.concatenate((noise, X)), np.concatenate((y_noise, y))
 
-
+CUBES_RECT_PARALLEL_K = [2, 4, 4, 4, 4, 4]
 CUBES_RECT_PARALLEL_DATA = [get_data_cube, get_data_cube2, get_data_cube3,
                             get_data_cube4, get_data_cube5, get_data_cube6]
 
@@ -407,7 +410,7 @@ def get_data_pathbased(**kwargs):
 def get_data_spiral(**kwargs):
     return __get_data_by_file(os.path.join(kwargs.get("path", "data"), "spiral.txt"))
 
-
+NON_SPHERICAL_K = [2, 2, 2, 2, 3, 3]
 NON_SPHERICAL_DATA = [get_data_circle, get_data_moons, get_data_jain, get_data_pathbased, get_data_spiral]
 
 
@@ -424,44 +427,5 @@ def get_data_compound(**kwargs):
 def get_data_flame(**kwargs):
     return __get_data_by_file(os.path.join(kwargs.get("path", "data"), "flame.txt"))
 
-
+OTHER_FORMS_K = [7, 6, 2]
 OTHER_FORMS_DATA = [get_data_aggregation, get_data_compound, get_data_flame]
-
-if __name__ == '__main__':
-    import seaborn as sns
-    import pandas as pd
-
-    sns.set()
-
-
-    def make_plot(X, y, axes=None, title=""):
-
-        df = pd.DataFrame(data=X)
-        df["cluster"] = y
-
-        sns.scatterplot(data=df, x=0, y=1, hue="cluster", ax=axes, palette="deep", legend=False)
-        if axes:
-            axes.set_title(title)
-        else:
-            plt.title(title)
-
-
-    for X, y in [test_gaussian_data_random(1500, 15)]:
-        # For 2d plots
-        make_plot(X, y)
-
-        # # For 3d plot, Axes3D
-        # fig = plt.figure()
-        # ax = fig.add_subplot(111, projection='3d')
-        #
-        # ax.scatter(X[:, 0], X[:, 1], X[:, 2], c='r', marker='o')
-
-        # # For Nd plots PairGrid
-        # df = pd.DataFrame(data=X)
-        # df["cluster"] = y
-        #
-        # g = sns.PairGrid(df, hue="cluster")
-        # g.map_diag(sns.histplot)
-        # g.map_offdiag(sns.scatterplot)
-
-        plt.show()
