@@ -34,7 +34,7 @@ def run_MeanShift_on_data_with_K(data_list, list_of_bandwidth: list = [], name="
         alg_time["meanshift_time"].append(finish - start)
         alg_mem["meanshift_mem"].append((peak - current) / 10 ** 6)
 
-        fig, axes = plt.subplots(1, 2, figsize=(18, 4))
+        fig, axes = plt.subplots(1, 2, figsize=(12, 4))
         make_plot(X, y, axes=axes[1], title="Target")
         make_plot(X, meanshift.labels_, axes=axes[0], title="Prediction MeanShift")
 
@@ -68,7 +68,7 @@ def run_MeanShift_on_data(data_list, BandWidth_range, name="", path="data"):
 
         meanshift = MeanShift(bandwidth=bandwidth).fit(X)
 
-        fig, axes = plt.subplots(1, 3, figsize=(9, 8))
+        fig, axes = plt.subplots(1, 3, figsize=(18, 4))
 
         sns.lineplot(data=pd.DataFrame(data={"y": scores, "x": BandWidth_range}), x="x", y="y",
                      ax=axes[0])
