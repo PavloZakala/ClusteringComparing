@@ -34,7 +34,7 @@ def run_MeanShift_on_data_with_K(data_list, list_of_bandwidth: list = [], name="
         alg_time["meanshift_time"].append(finish - start)
         alg_mem["meanshift_mem"].append((peak - current) / 10 ** 6)
 
-        fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+        fig, axes = plt.subplots(1, 2, figsize=(18, 4))
         make_plot(X, y, axes=axes[1], title="Target")
         make_plot(X, meanshift.labels_, axes=axes[0], title="Prediction MeanShift")
 

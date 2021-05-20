@@ -74,7 +74,7 @@ def run_CURE_on_data(data_list, K_range, name="", path="data"):
         clusterer = cure(X, np.argmax(scores) + 2, 5, 0.5, True)
         labels = convert_cluster_list_to_labels(clusterer.get_clusters(), y)
 
-        fig, axes = plt.subplots(1, 3, figsize=(9, 8))
+        fig, axes = plt.subplots(1, 3, figsize=(18, 4))
 
         sns.lineplot(data=pd.DataFrame(data={"y": scores, "x": K_range}), x="x", y="y",
                      ax=axes[0])

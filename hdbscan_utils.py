@@ -65,7 +65,7 @@ def run_HDBSCAN_on_data(data_list, min_cluster_size_range, name="", path="data")
         best_min_cluster_size = min_cluster_size_range[np.argmax(scores)]
         clusterer = hdbscan.HDBSCAN(min_cluster_size=best_min_cluster_size)
 
-        fig, axes = plt.subplots(1, 3, figsize=(9, 8))
+        fig, axes = plt.subplots(1, 3, figsize=(18, 4))
 
         sns.lineplot(data=pd.DataFrame(data={"y": scores, "x": min_cluster_size_range}), x="x", y="y",
                      ax=axes[0])

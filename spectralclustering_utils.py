@@ -64,7 +64,7 @@ def run_SpectralClustering_on_data(data_list, K_range, name="", path="data"):
                 scores.append(0.0)
         clusterer = SpectralClustering(n_clusters=np.argmax(scores) + 2, assign_labels='discretize', random_state=0)
 
-        fig, axes = plt.subplots(1, 3, figsize=(9, 8))
+        fig, axes = plt.subplots(1, 3, figsize=(18, 4))
 
         sns.lineplot(data=pd.DataFrame(data={"y": scores, "x": K_range}), x="x", y="y",
                      ax=axes[0])
