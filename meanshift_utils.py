@@ -58,9 +58,9 @@ def run_MeanShift_on_data(data_list, BandWidth_range, name="", path="data"):
         for bandwidth in BandWidth_range:
             meanshift = MeanShift(bandwidth=bandwidth)
             meanshift.fit(X)
-
-            score = silhouette_score(X, meanshift.labels_, metric='euclidean')
-            scores.append(score)
+            if max(meanshift.labels_) != 0:
+                score = silhouette_score(X, meanshift.labels_, metric='euclidean')
+                scores.append(score)
 
         bandwidth = BandWidth_range[np.argmax(scores)]
 
@@ -345,7 +345,7 @@ def check_stability(
             meanshift.fit(X)
             origin_score = rand_score(meanshift.labels_, y)
 
-            delta = (2 * np.random.rand(delta_size, 2) - 1.0) * 0.2 / K
+            delta = (2 * np.random.rand(delta_size, 2) - 1.0) * 0.3 / K
             idx = np.random.choice(total_size, delta_size, replace=False)
 
             X[idx] = X[idx] + delta
@@ -372,12 +372,21 @@ def check_stability(
 
 
 if __name__ == '__main__':
-    pass
+    from datasets import GAUSSIAN_BLOBS_DATA, GAUSSIAN_BLOBS_K
+    from datasets import UNBALANCED_GAUSSIAN_BLOBS_DATA, UNBALANCED_GAUSSIAN_BLOBS_K
+    from datasets import CUBES_RECT_PARALLEL_DATA, CUBES_RECT_PARALLEL_K
+    from datasets import NON_SPHERICAL_DATA, NON_SPHERICAL_K
+    from datasets import OTHER_FORMS_DATA, OTHER_FORMS_K
 
-    # for data_list, k_range, data_name in [
-    #     (GAUSSIAN_BLOBS_DATA, GAUSSIAN_BLOBS_K, "GAUSSIAN_BLOBS"),
-    #     (UNBALANCED_GAUSSIAN_BLOBS_DATA, UNBALANCED_GAUSSIAN_BLOBS_K, "UNBALANCED_GAUSSIAN_BLOBS"),
-    #     (CUBES_RECT_PARALLEL_DATA, CUBES_RECT_PARALLEL_K, "CUBES_RECT_PARALLEL"),
-    #     (NON_SPHERICAL_DATA, NON_SPHERICAL_K, "NON_SPHERICAL"),
-    #     (OTHER_FORMS_DATA, OTHER_FORMS_K, "OTHER_FORMS"),
-    # ]:
+    for data_list, k_range, data_name in [
+        (GAUSSIAN_BLOBS_DATA, GAUSSIAN_BLOBS_K, "GAUSSIAN_BLOBS"),
+        (UNBALANCED_GAUSSIAN_BLOBS_DATA, UNBALANCED_GAUSSIAN_BLOBS_K, "UNBALANCED_GAUSSIAN_BLOBS"),
+        (CUBES_RECT_PARALLEL_DATA, CUBES_RECT_PARALLEL_K, "CUBES_RECT_PARALLEL"),
+        (NON_SPHERICAL_DATA, NON_SPHERICAL_K, "NON_SPHERICAL"),
+        (OTHER_FORMS_DATA, OTHER_FORMS_K, "OTHER_FORMS"),
+    ]:
+        # run_MeanShift_on_data_with_K(GAUSSIAN_BLOBS_DATA, [2.0, 2.0, 1.1,
+        #                                                    1.1, 1.0, 1.0,
+        #                                                    2.0, 1.0, 1.0], "GAUSSIAN_BLOBS")
+
+        run_MeanShift_on_data(GAUSSIAN_BLOBS_DATA, [0.1, 0.3, 0.5, 0.7, 0.9, 1.1, 1.3, 1.5, 1.7, 1.9])

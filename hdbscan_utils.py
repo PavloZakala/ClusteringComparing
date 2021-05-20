@@ -339,7 +339,7 @@ def check_stability(
 
             origin_score = rand_score(clusterer.labels_, y)
 
-            delta = (2 * np.random.rand(delta_size, 2) - 1.0) * 0.2 / K
+            delta = (2 * np.random.rand(delta_size, 2) - 1.0) * 0.3 / K
             idx = np.random.choice(total_size, delta_size, replace=False)
 
             X[idx] = X[idx] + delta
