@@ -56,6 +56,7 @@ def run_SpectralClustering_on_data(data_list, K_range, name="", path="data"):
         scores = []
         for K in K_range:
             clusterer = SpectralClustering(n_clusters=K, assign_labels='discretize', random_state=0)
+            clusterer.fit(X)
 
             if max(clusterer.labels_) - min(clusterer.labels_) > 1:
                 score = silhouette_score(X, clusterer.labels_, metric='euclidean')
@@ -63,6 +64,7 @@ def run_SpectralClustering_on_data(data_list, K_range, name="", path="data"):
             else:
                 scores.append(0.0)
         clusterer = SpectralClustering(n_clusters=np.argmax(scores) + 2, assign_labels='discretize', random_state=0)
+        clusterer.fit(X)
 
         fig, axes = plt.subplots(1, 3, figsize=(18, 4))
 
@@ -364,4 +366,21 @@ def check_stability(
 
 
 if __name__ == '__main__':
-    pass
+    from datasets import GAUSSIAN_BLOBS_DATA, GAUSSIAN_BLOBS_K
+    from datasets import UNBALANCED_GAUSSIAN_BLOBS_DATA, UNBALANCED_GAUSSIAN_BLOBS_K
+    from datasets import CUBES_RECT_PARALLEL_DATA, CUBES_RECT_PARALLEL_K
+    from datasets import NON_SPHERICAL_DATA, NON_SPHERICAL_K
+    from datasets import OTHER_FORMS_DATA, OTHER_FORMS_K
+
+    for data_list, k_range, data_name in [
+        (GAUSSIAN_BLOBS_DATA, GAUSSIAN_BLOBS_K, "GAUSSIAN_BLOBS"),
+        (UNBALANCED_GAUSSIAN_BLOBS_DATA, UNBALANCED_GAUSSIAN_BLOBS_K, "UNBALANCED_GAUSSIAN_BLOBS"),
+        (CUBES_RECT_PARALLEL_DATA, CUBES_RECT_PARALLEL_K, "CUBES_RECT_PARALLEL"),
+        (NON_SPHERICAL_DATA, NON_SPHERICAL_K, "NON_SPHERICAL"),
+        (OTHER_FORMS_DATA, OTHER_FORMS_K, "OTHER_FORMS"),
+    ]:
+        # run_MeanShift_on_data_with_K(GAUSSIAN_BLOBS_DATA, [2.0, 2.0, 1.1,
+        #                                                    1.1, 1.0, 1.0,
+        #                                                    2.0, 1.0, 1.0], "GAUSSIAN_BLOBS")
+
+        run_SpectralClustering_on_data(GAUSSIAN_BLOBS_DATA, list(range(2, 40)))

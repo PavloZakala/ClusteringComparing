@@ -23,6 +23,7 @@ def run_HDBSCAN_on_data_with_K(data_list, list_of_k: list = [], name="", path="d
         X, y = data_gener(path=path)
 
         clusterer = hdbscan.HDBSCAN(min_cluster_size=min_cluster_size)
+
         tracemalloc.start()
         start = time.time()
         clusterer.fit_predict(X)
@@ -56,6 +57,7 @@ def run_HDBSCAN_on_data(data_list, min_cluster_size_range, name="", path="data")
         scores = []
         for min_cluster_size in min_cluster_size_range:
             clusterer = hdbscan.HDBSCAN(min_cluster_size=min_cluster_size)
+            clusterer.fit(X)
 
             if max(clusterer.labels_) - min(clusterer.labels_) > 1:
                 score = silhouette_score(X, clusterer.labels_, metric='euclidean')
@@ -64,6 +66,7 @@ def run_HDBSCAN_on_data(data_list, min_cluster_size_range, name="", path="data")
                 scores.append(0.0)
         best_min_cluster_size = min_cluster_size_range[np.argmax(scores)]
         clusterer = hdbscan.HDBSCAN(min_cluster_size=best_min_cluster_size)
+        clusterer.fit(X)
 
         fig, axes = plt.subplots(1, 3, figsize=(18, 4))
 
@@ -305,6 +308,8 @@ def check_init_dependency(
         scores = []
         for i in tqdm(range(iter)):
             clusterer = hdbscan.HDBSCAN(min_cluster_size=size / K / 2, random_state=0)
+            clusterer.fit(X)
+
             scores.append(rand_score(clusterer.labels_, y))
         scores_table.append(scores)
 
@@ -339,7 +344,7 @@ def check_stability(
             X, y = test_gaussian_data_v2(total_size, K, random_state=i)
 
             clusterer = hdbscan.HDBSCAN(min_cluster_size=cluster_size, random_state=0)
-
+            clusterer.fit(X)
             origin_score = rand_score(clusterer.labels_, y)
 
             delta = (2 * np.random.rand(delta_size, 2) - 1.0) * 0.3 / K
@@ -348,7 +353,7 @@ def check_stability(
             X[idx] = X[idx] + delta
 
             clusterer = hdbscan.HDBSCAN(min_cluster_size=cluster_size, random_state=0)
-
+            clusterer.fit(X)
             delta_score = rand_score(clusterer.labels_, y)
 
             scores.append(abs(delta_score - origin_score))
@@ -369,18 +374,21 @@ def check_stability(
 
 
 if __name__ == '__main__':
-    K = [3, 3, 3, 4, 15, 31, 3, 4, 15]
+    from datasets import GAUSSIAN_BLOBS_DATA, GAUSSIAN_BLOBS_K
+    from datasets import UNBALANCED_GAUSSIAN_BLOBS_DATA, UNBALANCED_GAUSSIAN_BLOBS_K
+    from datasets import CUBES_RECT_PARALLEL_DATA, CUBES_RECT_PARALLEL_K
+    from datasets import NON_SPHERICAL_DATA, NON_SPHERICAL_K
+    from datasets import OTHER_FORMS_DATA, OTHER_FORMS_K
 
-    # run_KMedoids_on_data_with_K([get_data_blobs, get_data_blobs2, get_data_blobs3], K)
+    for data_list, k_range, data_name in [
+        (GAUSSIAN_BLOBS_DATA, GAUSSIAN_BLOBS_K, "GAUSSIAN_BLOBS"),
+        (UNBALANCED_GAUSSIAN_BLOBS_DATA, UNBALANCED_GAUSSIAN_BLOBS_K, "UNBALANCED_GAUSSIAN_BLOBS"),
+        (CUBES_RECT_PARALLEL_DATA, CUBES_RECT_PARALLEL_K, "CUBES_RECT_PARALLEL"),
+        (NON_SPHERICAL_DATA, NON_SPHERICAL_K, "NON_SPHERICAL"),
+        (OTHER_FORMS_DATA, OTHER_FORMS_K, "OTHER_FORMS"),
+    ]:
+        # run_MeanShift_on_data_with_K(GAUSSIAN_BLOBS_DATA, [2.0, 2.0, 1.1,
+        #                                                    1.1, 1.0, 1.0,
+        #                                                    2.0, 1.0, 1.0], "GAUSSIAN_BLOBS")
 
-    # evaluation_time_of_working_by_k()
-    # evaluation_time_of_working_by_size()
-    # evaluation_mem_of_working_by_size()
-    # evaluation_mem_of_working_by_k()
-    # check_init_dependency()
-    # check_stability("pam")
-
-    # from datasets import get_gaussian_data_3d
-    #
-    # X, y = get_gaussian_data_3d()
-    # run_on_3d_data(X, y, 3, "Gaussian")
+        run_HDBSCAN_on_data(GAUSSIAN_BLOBS_DATA, list(range(5, 40, 5)) + list(range(50, 400, 50)))

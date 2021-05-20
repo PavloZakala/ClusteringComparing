@@ -32,6 +32,7 @@ def run_CURE_on_data_with_K(data_list, list_of_k: list = [], name="", path="data
         tracemalloc.start()
         start = time.time()
         clusterer = cure(X, k, 5, 0.5, True)
+        clusterer.process()
         finish = time.time()
         current, peak = tracemalloc.get_traced_memory()
         tracemalloc.stop()
@@ -64,6 +65,7 @@ def run_CURE_on_data(data_list, K_range, name="", path="data"):
         scores = []
         for K in K_range:
             clusterer = cure(X, K, 5, 0.5, True)
+            clusterer.process()
             labels = convert_cluster_list_to_labels(clusterer.get_clusters(), y)
 
             if max(labels) - min(labels) > 1:
@@ -72,6 +74,8 @@ def run_CURE_on_data(data_list, K_range, name="", path="data"):
             else:
                 scores.append(0.0)
         clusterer = cure(X, np.argmax(scores) + 2, 5, 0.5, True)
+        clusterer.process()
+
         labels = convert_cluster_list_to_labels(clusterer.get_clusters(), y)
 
         fig, axes = plt.subplots(1, 3, figsize=(18, 4))
@@ -92,6 +96,7 @@ def run_on_3d_data(X, y, K, data_name, path="data"):
     tracemalloc.start()
     start = time.time()
     clusterer = cure(X, K, 5, 0.5, True)
+    clusterer.process()
     finish = time.time()
     current, peak = tracemalloc.get_traced_memory()
     tracemalloc.stop()
@@ -152,7 +157,7 @@ def evaluation_time_of_working_by_k(
         time_line = []
         for K_for_find in tqdm(finding_k):
             start = time.time()
-            cure(X, K_for_find, 5, 0.5, True)
+            cure(X, K_for_find, 5, 0.5, True).process()
             finish = time.time()
             time_line.append(finish - start)
 
@@ -189,7 +194,7 @@ def evaluation_time_of_working_by_size(
         time_line = []
         for K_for_find in tqdm(finding_k):
             start_alternate = time.time()
-            cure(X, K_for_find, 5, 0.5, True)
+            cure(X, K_for_find, 5, 0.5, True).process()
             finish_alternate = time.time()
             time_line.append(finish_alternate - start_alternate)
 
@@ -230,7 +235,8 @@ def evaluation_mem_of_working_by_k(
         mem_line = []
         for K_for_find in tqdm(finding_k):
             tracemalloc.start()
-            cure(X, K_for_find, 5, 0.5, True)
+            cure(X, K_for_find, 5, 0.5, True).process()
+
             current, peak = tracemalloc.get_traced_memory()
             tracemalloc.stop()
 
@@ -271,7 +277,7 @@ def evaluation_mem_of_working_by_size(
 
         for K_for_find in tqdm(finding_k):
             tracemalloc.start()
-            cure(X, K_for_find, 5, 0.5, True)
+            cure(X, K_for_find, 5, 0.5, True).process()
             current, peak = tracemalloc.get_traced_memory()
             tracemalloc.stop()
 
@@ -308,6 +314,7 @@ def check_init_dependency(
         scores = []
         for i in tqdm(range(iter)):
             clusterer = cure(X, K, 5, 0.5, True)
+            clusterer.process()
             labels = convert_cluster_list_to_labels(clusterer.get_clusters(), y)
             scores.append(rand_score(labels, y))
         scores_table.append(scores)
@@ -342,6 +349,7 @@ def check_stability(cluster_size=30,
             X, y = test_gaussian_data_v2(total_size, K, random_state=i)
 
             clusterer = cure(X, K, 5, 0.5, True)
+            clusterer.process()
             labels = convert_cluster_list_to_labels(clusterer.get_clusters(), y)
 
             origin_score = rand_score(labels, y)
@@ -352,6 +360,7 @@ def check_stability(cluster_size=30,
             X[idx] = X[idx] + delta
 
             clusterer = cure(X, K, 5, 0.5, True)
+            clusterer.process()
             labels = convert_cluster_list_to_labels(clusterer.get_clusters(), y)
 
             delta_score = rand_score(labels, y)
@@ -374,4 +383,21 @@ def check_stability(cluster_size=30,
 
 
 if __name__ == '__main__':
-    pass
+    from datasets import GAUSSIAN_BLOBS_DATA, GAUSSIAN_BLOBS_K
+    from datasets import UNBALANCED_GAUSSIAN_BLOBS_DATA, UNBALANCED_GAUSSIAN_BLOBS_K
+    from datasets import CUBES_RECT_PARALLEL_DATA, CUBES_RECT_PARALLEL_K
+    from datasets import NON_SPHERICAL_DATA, NON_SPHERICAL_K
+    from datasets import OTHER_FORMS_DATA, OTHER_FORMS_K
+
+    for data_list, k_range, data_name in [
+        (GAUSSIAN_BLOBS_DATA, GAUSSIAN_BLOBS_K, "GAUSSIAN_BLOBS"),
+        (UNBALANCED_GAUSSIAN_BLOBS_DATA, UNBALANCED_GAUSSIAN_BLOBS_K, "UNBALANCED_GAUSSIAN_BLOBS"),
+        (CUBES_RECT_PARALLEL_DATA, CUBES_RECT_PARALLEL_K, "CUBES_RECT_PARALLEL"),
+        (NON_SPHERICAL_DATA, NON_SPHERICAL_K, "NON_SPHERICAL"),
+        (OTHER_FORMS_DATA, OTHER_FORMS_K, "OTHER_FORMS"),
+    ]:
+        # run_MeanShift_on_data_with_K(GAUSSIAN_BLOBS_DATA, [2.0, 2.0, 1.1,
+        #                                                    1.1, 1.0, 1.0,
+        #                                                    2.0, 1.0, 1.0], "GAUSSIAN_BLOBS")
+
+        run_CURE_on_data(GAUSSIAN_BLOBS_DATA, list(range(2, 40)))
