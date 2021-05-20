@@ -66,9 +66,11 @@ def run_CURE_on_data(data_list, K_range, name="", path="data"):
             clusterer = cure(X, K, 5, 0.5, True)
             labels = convert_cluster_list_to_labels(clusterer.get_clusters(), y)
 
-            score = silhouette_score(X, labels, metric='euclidean')
-            scores.append(score)
-
+            if max(labels) - min(labels) > 1:
+                score = silhouette_score(X, labels, metric='euclidean')
+                scores.append(score)
+            else:
+                scores.append(0.0)
         clusterer = cure(X, np.argmax(scores) + 2, 5, 0.5, True)
         labels = convert_cluster_list_to_labels(clusterer.get_clusters(), y)
 

@@ -57,8 +57,11 @@ def run_HDBSCAN_on_data(data_list, min_cluster_size_range, name="", path="data")
         for min_cluster_size in min_cluster_size_range:
             clusterer = hdbscan.HDBSCAN(min_cluster_size=min_cluster_size)
 
-            score = silhouette_score(X, clusterer.labels_, metric='euclidean')
-            scores.append(score)
+            if max(clusterer.labels_) - min(clusterer.labels_) > 1:
+                score = silhouette_score(X, clusterer.labels_, metric='euclidean')
+                scores.append(score)
+            else:
+                scores.append(0.0)
         best_min_cluster_size = min_cluster_size_range[np.argmax(scores)]
         clusterer = hdbscan.HDBSCAN(min_cluster_size=best_min_cluster_size)
 

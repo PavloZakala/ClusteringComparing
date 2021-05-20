@@ -57,9 +57,11 @@ def run_SpectralClustering_on_data(data_list, K_range, name="", path="data"):
         for K in K_range:
             clusterer = SpectralClustering(n_clusters=K, assign_labels='discretize', random_state=0)
 
-            score = silhouette_score(X, clusterer.labels_, metric='euclidean')
-            scores.append(score)
-
+            if max(clusterer.labels_) - min(clusterer.labels_) > 1:
+                score = silhouette_score(X, clusterer.labels_, metric='euclidean')
+                scores.append(score)
+            else:
+                scores.append(0.0)
         clusterer = SpectralClustering(n_clusters=np.argmax(scores) + 2, assign_labels='discretize', random_state=0)
 
         fig, axes = plt.subplots(1, 3, figsize=(9, 8))

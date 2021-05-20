@@ -76,9 +76,11 @@ def run_KMedoids_on_data(data_list, K_range, name="", path="data"):
             kmedoids_alternate = KMedoids(n_clusters=K, random_state=0, method="alternate")
             kmedoids_alternate.fit(X)
 
-            score = silhouette_score(X, kmedoids_alternate.labels_, metric='euclidean')
-            scores.append(score)
-
+            if max(kmedoids_alternate.labels_) - min(kmedoids_alternate.labels_) > 1:
+                score = silhouette_score(X, kmedoids_alternate.labels_, metric='euclidean')
+                scores.append(score)
+            else:
+                scores.append(0.0)
         kmedoids_alternate = KMedoids(n_clusters=np.argmax(scores) + 2, random_state=0, method="alternate").fit(X)
         kmedoids_pam = KMedoids(n_clusters=np.argmax(scores) + 2, random_state=0, method="pam").fit(X)
 

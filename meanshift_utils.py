@@ -58,10 +58,12 @@ def run_MeanShift_on_data(data_list, BandWidth_range, name="", path="data"):
         for bandwidth in BandWidth_range:
             meanshift = MeanShift(bandwidth=bandwidth)
             meanshift.fit(X)
-            if max(meanshift.labels_) != 0:
+
+            if max(meanshift.labels_) - min(meanshift.labels_) > 1:
                 score = silhouette_score(X, meanshift.labels_, metric='euclidean')
                 scores.append(score)
-
+            else:
+                scores.append(0.0)
         bandwidth = BandWidth_range[np.argmax(scores)]
 
         meanshift = MeanShift(bandwidth=bandwidth).fit(X)
