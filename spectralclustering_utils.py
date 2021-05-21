@@ -379,6 +379,5 @@ if __name__ == '__main__':
         (NON_SPHERICAL_DATA, NON_SPHERICAL_K, "NON_SPHERICAL"),
         (OTHER_FORMS_DATA, OTHER_FORMS_K, "OTHER_FORMS"),
     ]:
-        run_SpectralClustering_on_data_with_K(NON_SPHERICAL_DATA, NON_SPHERICAL_K, "NON_SPHERICAL")
-
-        # run_SpectralClustering_on_data(GAUSSIAN_BLOBS_DATA, list(range(2, 40)))
+        check_init_dependency()
+        check_stability()

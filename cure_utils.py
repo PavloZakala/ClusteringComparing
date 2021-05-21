@@ -396,8 +396,5 @@ if __name__ == '__main__':
         (NON_SPHERICAL_DATA, NON_SPHERICAL_K, "NON_SPHERICAL"),
         (OTHER_FORMS_DATA, OTHER_FORMS_K, "OTHER_FORMS"),
     ]:
-        # run_MeanShift_on_data_with_K(GAUSSIAN_BLOBS_DATA, [2.0, 2.0, 1.1,
-        #                                                    1.1, 1.0, 1.0,
-        #                                                    2.0, 1.0, 1.0], "GAUSSIAN_BLOBS")
-
-        run_CURE_on_data(GAUSSIAN_BLOBS_DATA, list(range(2, 40)))
+        check_init_dependency()
+        check_stability()

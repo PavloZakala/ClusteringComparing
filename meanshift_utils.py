@@ -394,8 +394,5 @@ if __name__ == '__main__':
         #                                                    1.1, 1.0, 1.0,
         #                                                    2.0, 1.0, 1.0], "GAUSSIAN_BLOBS")
 
-        K_RANGE = [2, 3]#, 5, 8, 10, 15, 30]
-
-        evaluation_time_of_working_by_k(K_RANGE,
-                                        finding_bandwidth=[0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5],
-                                        total_size=1000)
+        check_init_dependency()
+        check_stability()

@@ -199,7 +199,8 @@ def evaluation_time_of_working_by_size(
 
     fig, axes = plt.subplots(1, 2, figsize=(13, 5))
 
-    sns.heatmap(pd.DataFrame(data=time_table, index=["min_cluster_size={}".format(K) for K in finding_min_cluster_size],
+    sns.heatmap(pd.DataFrame(data=time_table,
+                             index=["MinSize={}".format(K) for K in finding_min_cluster_size],
                              columns=total_size),
                 ax=axes[0])
 
@@ -242,7 +243,7 @@ def evaluation_mem_of_working_by_min_cluster_size(
     fig, axes = plt.subplots(1, 2, figsize=(13, 5))
 
     sns.heatmap(
-        pd.DataFrame(data=mem_table,
+        pd.DataFrame(data=np.array(mem_table).T,
                      index=["MinSize={}".format(min_cluster_size) for min_cluster_size in finding_min_cluster_size],
                      columns=real_k),
         ax=axes[0])
@@ -287,7 +288,8 @@ def evaluation_mem_of_working_by_size(
 
     fig, axes = plt.subplots(1, 2, figsize=(13, 5))
 
-    sns.heatmap(pd.DataFrame(data=mem_table, index=["min_cluster_size={}".format(K) for K in finding_min_cluster_size],
+    sns.heatmap(pd.DataFrame(data=mem_table,
+                             index=["MinSize={}".format(K) for K in finding_min_cluster_size],
                              columns=total_size),
                 ax=axes[0])
 
@@ -350,7 +352,7 @@ def check_stability(
             clusterer.fit(X)
             origin_score = rand_score(clusterer.labels_, y)
 
-            delta = (2 * np.random.rand(delta_size, 2) - 1.0) * 0.3 / K
+            delta = (2 * np.random.rand(delta_size, 2) - 1.0) * 0.2 / K
             idx = np.random.choice(total_size, delta_size, replace=False)
 
             X[idx] = X[idx] + delta
@@ -390,5 +392,5 @@ if __name__ == '__main__':
         (NON_SPHERICAL_DATA, NON_SPHERICAL_K, "NON_SPHERICAL"),
         (OTHER_FORMS_DATA, OTHER_FORMS_K, "OTHER_FORMS"),
     ]:
-        evaluation_mem_of_working_by_size(7,
-                                          finding_min_cluster_size=list(range(20, 300, 20)))
+        check_init_dependency()
+        check_stability()
