@@ -310,7 +310,7 @@ def check_init_dependency(
         X, y = test_gaussian_data(size, K)
         scores = []
         for i in range(iter):
-            clusterer = hdbscan.HDBSCAN(min_cluster_size=size / K / 2)
+            clusterer = hdbscan.HDBSCAN(min_cluster_size=int(size / K / 2))
             clusterer.fit(X)
 
             scores.append(rand_score(clusterer.labels_, y))
