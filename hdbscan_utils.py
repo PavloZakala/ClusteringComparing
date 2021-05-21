@@ -35,8 +35,8 @@ def run_HDBSCAN_on_data_with_K(data_list, list_of_k: list = [], name="", path="d
         alg_mem["hdbscan_mem"].append((peak - current) / 10 ** 6)
 
         fig, axes = plt.subplots(1, 2, figsize=(12, 4))
-        make_plot(X, y, axes=axes[1], title="Target")
-        make_plot(X, clusterer.labels_, axes=axes[0], title="Prediction HDBSCAN")
+        make_plot(X, y, axes=axes[0], title="Target")
+        make_plot(X, clusterer.labels_, axes=axes[1], title="Prediction HDBSCAN")
 
         plt.savefig(os.path.join(path, "images", "hdbscan_{}_{}.png".format(name.upper(), i)))
         plt.show()
@@ -140,10 +140,10 @@ def evaluation_time_of_working_by_min_cluster_size(
     new_min_cluster_size_range = np.linspace(min(finding_min_cluster_size), max(finding_min_cluster_size), 300)
     time_table_df["range"] = new_min_cluster_size_range
 
-    for K in real_k:
+    for K in tqdm(real_k):
         X, y = test_gaussian_data(total_size, K)
         time_line = []
-        for min_cluster_size in tqdm(finding_min_cluster_size):
+        for min_cluster_size in finding_min_cluster_size:
             clusterer = hdbscan.HDBSCAN(min_cluster_size=min_cluster_size)
             start = time.time()
             clusterer.fit(X)
@@ -156,8 +156,9 @@ def evaluation_time_of_working_by_min_cluster_size(
 
     fig, axes = plt.subplots(1, 2, figsize=(13, 5))
 
-    sns.heatmap(pd.DataFrame(data=time_table, index=["K={}".format(K) for K in real_k],
-                             columns=finding_min_cluster_size), ax=axes[0])
+    sns.heatmap(pd.DataFrame(data=np.array(time_table).T,
+                             index=["MinSize={}".format(min_cluster_size) for min_cluster_size in finding_min_cluster_size],
+                             columns=real_k), ax=axes[0])
 
     sns.lineplot(x='range', y='value', hue='variable',
                  data=pd.melt(time_table_df, ['range']), ax=axes[1])
@@ -179,10 +180,10 @@ def evaluation_time_of_working_by_size(
     new_min_cluster_size_range = np.linspace(min(finding_min_cluster_size), max(finding_min_cluster_size), 300)
     time_table_df["range"] = new_min_cluster_size_range
 
-    for size in total_size:
+    for size in tqdm(total_size):
         X, y = test_gaussian_data(size, real_k)
         time_line = []
-        for min_cluster_size in tqdm(finding_min_cluster_size):
+        for min_cluster_size in finding_min_cluster_size:
             clusterer = hdbscan.HDBSCAN(min_cluster_size=min_cluster_size)
             start_alternate = time.time()
             clusterer.fit(X)
@@ -222,10 +223,10 @@ def evaluation_mem_of_working_by_min_cluster_size(
     new_min_cluster_size_range = np.linspace(min(finding_min_cluster_size), max(finding_min_cluster_size), 300)
     mem_table_df["range"] = new_min_cluster_size_range
 
-    for K in real_k:
+    for K in tqdm(real_k):
         X, y = test_gaussian_data(total_size, K)
         mem_line = []
-        for min_cluster_size in tqdm(finding_min_cluster_size):
+        for min_cluster_size in finding_min_cluster_size:
             clusterer = hdbscan.HDBSCAN(min_cluster_size=min_cluster_size)
             tracemalloc.start()
             clusterer.fit(X)
@@ -241,7 +242,9 @@ def evaluation_mem_of_working_by_min_cluster_size(
     fig, axes = plt.subplots(1, 2, figsize=(13, 5))
 
     sns.heatmap(
-        pd.DataFrame(data=mem_table, index=["K={}".format(K) for K in real_k], columns=finding_min_cluster_size),
+        pd.DataFrame(data=mem_table,
+                     index=["MinSize={}".format(min_cluster_size) for min_cluster_size in finding_min_cluster_size],
+                     columns=real_k),
         ax=axes[0])
 
     sns.lineplot(x='range', y='value', hue='variable',
@@ -264,10 +267,10 @@ def evaluation_mem_of_working_by_size(
     new_size_range = np.linspace(min(total_size), max(total_size), 300)
     mem_table_df["range"] = new_size_range
 
-    for size in total_size:
+    for size in tqdm(total_size):
         X, y = test_gaussian_data(size, real_k)
         mem_line = []
-        for min_cluster_size in tqdm(finding_min_cluster_size):
+        for min_cluster_size in finding_min_cluster_size:
             clusterer = hdbscan.HDBSCAN(min_cluster_size=min_cluster_size)
 
             tracemalloc.start()
@@ -303,10 +306,10 @@ def check_init_dependency(
 
     REAL_K = [2, 3, 5, 8, 10, 15, 30]
     scores_table = []
-    for K in REAL_K:
+    for K in tqdm(REAL_K):
         X, y = test_gaussian_data(size, K)
         scores = []
-        for i in tqdm(range(iter)):
+        for i in range(iter):
             clusterer = hdbscan.HDBSCAN(min_cluster_size=size / K / 2)
             clusterer.fit(X)
 
@@ -334,13 +337,13 @@ def check_stability(
     from datasets import test_gaussian_data_v2
 
     scores_table = []
-    for K in real_k:
+    for K in tqdm(real_k):
 
         total_size = cluster_size * K
         delta_size = int(total_size * 0.1)
         scores = []
 
-        for i in tqdm(range(iter)):
+        for i in range(iter):
             X, y = test_gaussian_data_v2(total_size, K, random_state=i)
 
             clusterer = hdbscan.HDBSCAN(min_cluster_size=cluster_size)
@@ -387,8 +390,5 @@ if __name__ == '__main__':
         (NON_SPHERICAL_DATA, NON_SPHERICAL_K, "NON_SPHERICAL"),
         (OTHER_FORMS_DATA, OTHER_FORMS_K, "OTHER_FORMS"),
     ]:
-        # run_MeanShift_on_data_with_K(GAUSSIAN_BLOBS_DATA, [2.0, 2.0, 1.1,
-        #                                                    1.1, 1.0, 1.0,
-        #                                                    2.0, 1.0, 1.0], "GAUSSIAN_BLOBS")
-
-        run_HDBSCAN_on_data(GAUSSIAN_BLOBS_DATA, list(range(5, 40, 5)) + list(range(50, 400, 50)))
+        evaluation_mem_of_working_by_size(7,
+                                          finding_min_cluster_size=list(range(20, 300, 20)))

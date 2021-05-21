@@ -46,8 +46,8 @@ def run_KMedoids_on_data_with_K(data_list, list_of_k, name="", path="data"):
         alg_mem["kmedoids_pam_mem"].append((peak - current) / 10 ** 6)
 
         fig, axes = plt.subplots(1, 3, figsize=(18, 4))
-        make_plot(X, y, axes=axes[1], title="Target")
-        make_plot(X, kmedoids_alternate.labels_, axes=axes[0], title="Prediction Alternate")
+        make_plot(X, y, axes=axes[0], title="Target")
+        make_plot(X, kmedoids_alternate.labels_, axes=axes[1], title="Prediction Alternate")
         make_plot(X, kmedoids_pam.labels_, axes=axes[2], title="Prediction PAM")
 
         plt.savefig(os.path.join(path, "images", "k-mediods_{}_{}.png".format(name.upper(), i)))
@@ -197,10 +197,10 @@ def evaluation_time_of_working_by_k(
     new_k_range = np.linspace(min(finding_k), max(finding_k), 300)
     time_table_df["range"] = new_k_range
 
-    for K in real_k:
+    for K in tqdm(real_k):
         X, y = test_gaussian_data(total_size, K)
         time_line = []
-        for K_for_find in tqdm(finding_k):
+        for K_for_find in finding_k:
             kmedoids = KMedoids(n_clusters=K_for_find, random_state=0, method=method)
             start_alternate = time.time()
             kmedoids.fit(X)
@@ -236,10 +236,10 @@ def evaluation_time_of_working_by_size(
     new_size_range = np.linspace(min(total_size), max(total_size), 300)
     time_table_df["range"] = new_size_range
 
-    for size in total_size:
+    for size in tqdm(total_size):
         X, y = test_gaussian_data(size, real_k)
         time_line = []
-        for K_for_find in tqdm(finding_k):
+        for K_for_find in finding_k:
             kmedoids = KMedoids(n_clusters=K_for_find, random_state=0, method=method)
             start_alternate = time.time()
             kmedoids.fit(X)
@@ -279,10 +279,10 @@ def evaluation_mem_of_working_by_k(
     new_k_range = np.linspace(min(finding_k), max(finding_k), 300)
     mem_table_df["range"] = new_k_range
 
-    for K in real_k:
+    for K in tqdm(real_k):
         X, y = test_gaussian_data(total_size, K)
         mem_line = []
-        for K_for_find in tqdm(finding_k):
+        for K_for_find in finding_k:
             kmedoids = KMedoids(n_clusters=K_for_find, random_state=0, method=method)
             tracemalloc.start()
             kmedoids.fit(X)
@@ -320,11 +320,11 @@ def evaluation_mem_of_working_by_size(
     new_size_range = np.linspace(min(total_size), max(total_size), 300)
     mem_table_df["range"] = new_size_range
 
-    for size in total_size:
+    for size in tqdm(total_size):
         X, y = test_gaussian_data(size, real_k)
         mem_line = []
 
-        for K_for_find in tqdm(finding_k):
+        for K_for_find in finding_k:
             kmedoids = KMedoids(n_clusters=K_for_find, random_state=0, method=method)
             tracemalloc.start()
             kmedoids.fit(X)
@@ -360,10 +360,10 @@ def check_init_dependency(
 
     REAL_K = [2, 3, 5, 8, 10, 15]
     scores_table = []
-    for K in REAL_K:
+    for K in tqdm(REAL_K):
         X, y = test_gaussian_data(size, K)
         scores = []
-        for i in tqdm(range(iter)):
+        for i in range(iter):
             kmedoids = KMedoids(n_clusters=K, random_state=i, init="build", method=method)
             kmedoids.fit(X)
             scores.append(rand_score(kmedoids.labels_, y))
@@ -392,13 +392,13 @@ def check_stability(
     from datasets import test_gaussian_data_v2
 
     scores_table = []
-    for K in real_k:
+    for K in tqdm(real_k):
 
         total_size = cluster_size * K
         delta_size = int(total_size * 0.1)
         scores = []
 
-        for i in tqdm(range(iter)):
+        for i in range(iter):
             X, y = test_gaussian_data_v2(total_size, K, random_state=i)
 
             kmedoids = KMedoids(n_clusters=K, random_state=0, init="build", method=method)

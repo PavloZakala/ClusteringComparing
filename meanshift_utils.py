@@ -142,10 +142,10 @@ def evaluation_time_of_working_by_k(
     new_bandwidth_range = np.linspace(min(finding_bandwidth), max(finding_bandwidth), 200)
     time_table_df["range"] = new_bandwidth_range
 
-    for K in real_k:
+    for K in tqdm(real_k):
         X, y = test_gaussian_data(total_size, K)
         time_line = []
-        for bandwidth in tqdm(finding_bandwidth):
+        for bandwidth in finding_bandwidth:
             meanshift = MeanShift(bandwidth=bandwidth)
             start = time.time()
             meanshift.fit(X)
@@ -158,8 +158,9 @@ def evaluation_time_of_working_by_k(
 
     fig, axes = plt.subplots(1, 2, figsize=(13, 5))
 
-    sns.heatmap(pd.DataFrame(data=time_table, index=["K={}".format(K) for K in real_k], columns=finding_bandwidth),
-                ax=axes[0])
+    sns.heatmap(pd.DataFrame(data=np.array(time_table).T,
+                             index=["bandwidth={}".format(bandwidth) for bandwidth in finding_bandwidth],
+                             columns=real_k), ax=axes[0])
 
     sns.lineplot(x='range', y='value', hue='variable',
                  data=pd.melt(time_table_df, ['range']), ax=axes[1])
@@ -181,10 +182,10 @@ def evaluation_time_of_working_by_size(
     new_size_range = np.linspace(min(total_size), max(total_size), 300)
     time_table_df["range"] = new_size_range
 
-    for size in total_size:
+    for size in tqdm(total_size):
         X, y = test_gaussian_data(size, real_k)
         time_line = []
-        for bandwidth in tqdm(finding_bandwidth):
+        for bandwidth in finding_bandwidth:
             meanshift = MeanShift(bandwidth=bandwidth)
             start = time.time()
             meanshift.fit(X)
@@ -224,10 +225,10 @@ def evaluation_mem_of_working_by_k(
     new_bandwidth_range = np.linspace(min(finding_bandwidth), max(finding_bandwidth), 300)
     mem_table_df["range"] = new_bandwidth_range
 
-    for K in real_k:
+    for K in tqdm(real_k):
         X, y = test_gaussian_data(total_size, K)
         mem_line = []
-        for bandwidth in tqdm(finding_bandwidth):
+        for bandwidth in finding_bandwidth:
             meanshift = MeanShift(bandwidth=bandwidth)
 
             tracemalloc.start()
@@ -244,8 +245,9 @@ def evaluation_mem_of_working_by_k(
 
     fig, axes = plt.subplots(1, 2, figsize=(13, 5))
 
-    sns.heatmap(pd.DataFrame(data=mem_table, index=["K={}".format(K) for K in real_k], columns=finding_bandwidth),
-                ax=axes[0])
+    sns.heatmap(pd.DataFrame(data=np.array(mem_table).T,
+                             index=["bandwidth={}".format(bandwidth) for bandwidth in finding_bandwidth],
+                             columns=real_k), ax=axes[0])
 
     sns.lineplot(x='range', y='value', hue='variable',
                  data=pd.melt(mem_table_df, ['range']), ax=axes[1])
@@ -267,10 +269,10 @@ def evaluation_mem_of_working_by_size(
     new_size_range = np.linspace(min(total_size), max(total_size), 300)
     mem_table_df["range"] = new_size_range
 
-    for size in total_size:
+    for size in tqdm(total_size):
         X, y = test_gaussian_data(size, real_k)
         mem_line = []
-        for bandwidth in tqdm(finding_bandwidth):
+        for bandwidth in finding_bandwidth:
             meanshift = MeanShift(bandwidth=bandwidth)
             tracemalloc.start()
             meanshift.fit(X)
@@ -306,10 +308,10 @@ def check_init_dependency(
 
     REAL_K = [2, 3, 5, 8, 10, 15, 30]
     scores_table = []
-    for K in REAL_K:
+    for K in tqdm(REAL_K):
         X, y = test_gaussian_data(size, K)
         scores = []
-        for i in tqdm(range(iter)):
+        for i in range(iter):
             meanshift = MeanShift(bandwidth=1.5)
             meanshift.fit(X)
             scores.append(rand_score(meanshift.labels_, y))
@@ -336,12 +338,12 @@ def check_stability(
     from datasets import test_gaussian_data_v2
 
     scores_table = []
-    for K in real_k:
+    for K in tqdm(real_k):
         total_size = cluster_size * K
         delta_size = int(total_size * 0.1)
         scores = []
 
-        for i in tqdm(range(iter)):
+        for i in range(iter):
             X, y = test_gaussian_data_v2(total_size, K, random_state=i)
 
             meanshift = MeanShift(bandwidth=1.5)
@@ -392,6 +394,8 @@ if __name__ == '__main__':
         #                                                    1.1, 1.0, 1.0,
         #                                                    2.0, 1.0, 1.0], "GAUSSIAN_BLOBS")
 
-        BandWidth_range = list(np.arange(0.1, 1.4, 0.2)) + list(np.arange(2, 14, 1))
+        K_RANGE = [2, 3]#, 5, 8, 10, 15, 30]
 
-        run_MeanShift_on_data(OTHER_FORMS_DATA, BandWidth_range, "OTHER_FORMS")
+        evaluation_time_of_working_by_k(K_RANGE,
+                                        finding_bandwidth=[0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5],
+                                        total_size=1000)

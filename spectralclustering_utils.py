@@ -34,8 +34,8 @@ def run_SpectralClustering_on_data_with_K(data_list, list_of_k: list = [], name=
         alg_mem["spectral_clustering_mem"].append((peak - current) / 10 ** 6)
 
         fig, axes = plt.subplots(1, 2, figsize=(12, 4))
-        make_plot(X, y, axes=axes[1], title="Target")
-        make_plot(X, clusterer.labels_, axes=axes[0], title="Prediction Spectral Clustering")
+        make_plot(X, y, axes=axes[0], title="Target")
+        make_plot(X, clusterer.labels_, axes=axes[1], title="Prediction Spectral Clustering")
 
         plt.savefig(os.path.join(path, "images", "spectral_clustering_{}_{}.png".format(name.upper(), i)))
         plt.show()
@@ -138,10 +138,10 @@ def evaluation_time_of_working_by_k(
     new_k_range = np.linspace(min(finding_k), max(finding_k), 300)
     time_table_df["range"] = new_k_range
 
-    for K in real_k:
+    for K in tqdm(real_k):
         X, y = test_gaussian_data(total_size, K)
         time_line = []
-        for K_for_find in tqdm(finding_k):
+        for K_for_find in finding_k:
             clusterer = SpectralClustering(n_clusters=K_for_find, affinity="nearest_neighbors", random_state=0)
             start = time.time()
             clusterer.fit(X)
@@ -176,10 +176,10 @@ def evaluation_time_of_working_by_size(
     new_size_range = np.linspace(min(total_size), max(total_size), 300)
     time_table_df["range"] = new_size_range
 
-    for size in total_size:
+    for size in tqdm(total_size):
         X, y = test_gaussian_data(size, real_k)
         time_line = []
-        for K_for_find in tqdm(finding_k):
+        for K_for_find in finding_k:
             clusterer = SpectralClustering(n_clusters=K_for_find, affinity="nearest_neighbors", random_state=0)
             start_alternate = time.time()
             clusterer.fit(X)
@@ -218,10 +218,10 @@ def evaluation_mem_of_working_by_k(
     new_k_range = np.linspace(min(finding_k), max(finding_k), 300)
     mem_table_df["range"] = new_k_range
 
-    for K in real_k:
+    for K in tqdm(real_k):
         X, y = test_gaussian_data(total_size, K)
         mem_line = []
-        for K_for_find in tqdm(finding_k):
+        for K_for_find in finding_k:
             clusterer = SpectralClustering(n_clusters=K_for_find, affinity="nearest_neighbors", random_state=0)
 
             tracemalloc.start()
@@ -259,10 +259,10 @@ def evaluation_mem_of_working_by_size(
     new_size_range = np.linspace(min(total_size), max(total_size), 300)
     mem_table_df["range"] = new_size_range
 
-    for size in total_size:
+    for size in tqdm(total_size):
         X, y = test_gaussian_data(size, real_k)
         mem_line = []
-        for K_for_find in tqdm(finding_k):
+        for K_for_find in finding_k:
             clusterer = SpectralClustering(n_clusters=K_for_find, affinity="nearest_neighbors", random_state=0)
 
             tracemalloc.start()
@@ -297,10 +297,10 @@ def check_init_dependency(
 
     REAL_K = [2, 3, 5, 8, 10, 15]
     scores_table = []
-    for K in REAL_K:
+    for K in tqdm(REAL_K):
         X, y = test_gaussian_data(size, K)
         scores = []
-        for i in tqdm(range(iter)):
+        for i in range(iter):
             clusterer = SpectralClustering(n_clusters=K, affinity="nearest_neighbors", random_state=i)
             scores.append(rand_score(clusterer.labels_, y))
         scores_table.append(scores)
@@ -326,13 +326,13 @@ def check_stability(
     from datasets import test_gaussian_data_v2
 
     scores_table = []
-    for K in real_k:
+    for K in tqdm(real_k):
 
         total_size = cluster_size * K
         delta_size = int(total_size * 0.1)
         scores = []
 
-        for i in tqdm(range(iter)):
+        for i in range(iter):
             X, y = test_gaussian_data_v2(total_size, K, random_state=i)
 
             clusterer = SpectralClustering(n_clusters=K, affinity="nearest_neighbors", random_state=0)

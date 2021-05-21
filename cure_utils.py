@@ -43,8 +43,8 @@ def run_CURE_on_data_with_K(data_list, list_of_k: list = [], name="", path="data
         labels = convert_cluster_list_to_labels(clusterer.get_clusters(), y)
 
         fig, axes = plt.subplots(1, 2, figsize=(12, 4))
-        make_plot(X, y, axes=axes[1], title="Target")
-        make_plot(X, labels, axes=axes[0], title="Prediction CURE")
+        make_plot(X, y, axes=axes[0], title="Target")
+        make_plot(X, labels, axes=axes[1], title="Prediction CURE")
 
         plt.savefig(os.path.join(path, "images", "cure{}{}.png".format(name.upper(), i)))
         plt.show()
@@ -152,10 +152,10 @@ def evaluation_time_of_working_by_k(
     new_k_range = np.linspace(min(finding_k), max(finding_k), 300)
     time_table_df["range"] = new_k_range
 
-    for K in real_k:
+    for K in tqdm(real_k):
         X, y = test_gaussian_data(total_size, K)
         time_line = []
-        for K_for_find in tqdm(finding_k):
+        for K_for_find in finding_k:
             start = time.time()
             cure(X, K_for_find, 5, 0.5, True).process()
             finish = time.time()
@@ -189,10 +189,10 @@ def evaluation_time_of_working_by_size(
     new_size_range = np.linspace(min(total_size), max(total_size), 300)
     time_table_df["range"] = new_size_range
 
-    for size in total_size:
+    for size in tqdm(total_size):
         X, y = test_gaussian_data(size, real_k)
         time_line = []
-        for K_for_find in tqdm(finding_k):
+        for K_for_find in finding_k:
             start_alternate = time.time()
             cure(X, K_for_find, 5, 0.5, True).process()
             finish_alternate = time.time()
@@ -230,10 +230,10 @@ def evaluation_mem_of_working_by_k(
     new_k_range = np.linspace(min(finding_k), max(finding_k), 300)
     mem_table_df["range"] = new_k_range
 
-    for K in real_k:
+    for K in tqdm(real_k):
         X, y = test_gaussian_data(total_size, K)
         mem_line = []
-        for K_for_find in tqdm(finding_k):
+        for K_for_find in finding_k:
             tracemalloc.start()
             cure(X, K_for_find, 5, 0.5, True).process()
 
@@ -271,11 +271,11 @@ def evaluation_mem_of_working_by_size(
     new_size_range = np.linspace(min(total_size), max(total_size), 300)
     mem_table_df["range"] = new_size_range
 
-    for size in total_size:
+    for size in tqdm(total_size):
         X, y = test_gaussian_data(size, real_k)
         mem_line = []
 
-        for K_for_find in tqdm(finding_k):
+        for K_for_find in finding_k:
             tracemalloc.start()
             cure(X, K_for_find, 5, 0.5, True).process()
             current, peak = tracemalloc.get_traced_memory()
@@ -309,10 +309,10 @@ def check_init_dependency(
 
     REAL_K = [2, 3, 5, 8, 10, 15]
     scores_table = []
-    for K in REAL_K:
+    for K in tqdm(REAL_K):
         X, y = test_gaussian_data(size, K)
         scores = []
-        for i in tqdm(range(iter)):
+        for i in range(iter):
             clusterer = cure(X, K, 5, 0.5, True)
             clusterer.process()
             labels = convert_cluster_list_to_labels(clusterer.get_clusters(), y)
@@ -339,13 +339,13 @@ def check_stability(cluster_size=30,
     from datasets import test_gaussian_data_v2
 
     scores_table = []
-    for K in real_k:
+    for K in tqdm(real_k):
 
         total_size = cluster_size * K
         delta_size = int(total_size * 0.1)
         scores = []
 
-        for i in tqdm(range(iter)):
+        for i in range(iter):
             X, y = test_gaussian_data_v2(total_size, K, random_state=i)
 
             clusterer = cure(X, K, 5, 0.5, True)
