@@ -209,7 +209,7 @@ def evaluation_time_of_working_by_size(
     plt.show()
 
 
-def evaluation_mem_of_working_by_k(
+def evaluation_mem_of_working_by_min_cluster_size(
         real_k: list = [2, 3, 5, 8, 10, 15, 30],
         finding_min_cluster_size: list = [50, 100, 150, 200, 300],
         total_size: int = 2500,
@@ -226,7 +226,7 @@ def evaluation_mem_of_working_by_k(
         X, y = test_gaussian_data(total_size, K)
         mem_line = []
         for min_cluster_size in tqdm(finding_min_cluster_size):
-            clusterer = hdbscan.HDBSCAN(min_cluster_size=min_cluster_size, random_state=0)
+            clusterer = hdbscan.HDBSCAN(min_cluster_size=min_cluster_size)
             tracemalloc.start()
             clusterer.fit(X)
             current, peak = tracemalloc.get_traced_memory()
@@ -268,7 +268,7 @@ def evaluation_mem_of_working_by_size(
         X, y = test_gaussian_data(size, real_k)
         mem_line = []
         for min_cluster_size in tqdm(finding_min_cluster_size):
-            clusterer = hdbscan.HDBSCAN(min_cluster_size=min_cluster_size, random_state=0)
+            clusterer = hdbscan.HDBSCAN(min_cluster_size=min_cluster_size)
 
             tracemalloc.start()
             clusterer.fit(X)
@@ -307,7 +307,7 @@ def check_init_dependency(
         X, y = test_gaussian_data(size, K)
         scores = []
         for i in tqdm(range(iter)):
-            clusterer = hdbscan.HDBSCAN(min_cluster_size=size / K / 2, random_state=0)
+            clusterer = hdbscan.HDBSCAN(min_cluster_size=size / K / 2)
             clusterer.fit(X)
 
             scores.append(rand_score(clusterer.labels_, y))
@@ -343,7 +343,7 @@ def check_stability(
         for i in tqdm(range(iter)):
             X, y = test_gaussian_data_v2(total_size, K, random_state=i)
 
-            clusterer = hdbscan.HDBSCAN(min_cluster_size=cluster_size, random_state=0)
+            clusterer = hdbscan.HDBSCAN(min_cluster_size=cluster_size)
             clusterer.fit(X)
             origin_score = rand_score(clusterer.labels_, y)
 
@@ -352,7 +352,7 @@ def check_stability(
 
             X[idx] = X[idx] + delta
 
-            clusterer = hdbscan.HDBSCAN(min_cluster_size=cluster_size, random_state=0)
+            clusterer = hdbscan.HDBSCAN(min_cluster_size=cluster_size)
             clusterer.fit(X)
             delta_score = rand_score(clusterer.labels_, y)
 
