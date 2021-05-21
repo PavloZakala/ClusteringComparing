@@ -59,7 +59,8 @@ def run_MeanShift_on_data(data_list, BandWidth_range, name="", path="data"):
             meanshift = MeanShift(bandwidth=bandwidth)
             meanshift.fit(X)
 
-            if max(meanshift.labels_) - min(meanshift.labels_) > 1:
+            if max(meanshift.labels_) - min(meanshift.labels_) > 1 and \
+               max(meanshift.labels_) < len(y) - 1:
                 score = silhouette_score(X, meanshift.labels_, metric='euclidean')
                 scores.append(score)
             else:
@@ -391,4 +392,6 @@ if __name__ == '__main__':
         #                                                    1.1, 1.0, 1.0,
         #                                                    2.0, 1.0, 1.0], "GAUSSIAN_BLOBS")
 
-        run_MeanShift_on_data(GAUSSIAN_BLOBS_DATA, [0.1, 0.3, 0.5, 0.7, 0.9, 1.1, 1.3, 1.5, 1.7, 1.9])
+        BandWidth_range = list(np.arange(0.1, 1.4, 0.2)) + list(np.arange(2, 14, 1))
+
+        run_MeanShift_on_data(OTHER_FORMS_DATA, BandWidth_range, "OTHER_FORMS")

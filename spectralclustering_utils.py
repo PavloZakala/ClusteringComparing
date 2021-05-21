@@ -22,7 +22,7 @@ def run_SpectralClustering_on_data_with_K(data_list, list_of_k: list = [], name=
     for i, (data_gener, k) in enumerate(zip(data_list, list_of_k)):
         X, y = data_gener(path=path)
 
-        clusterer = SpectralClustering(n_clusters=k, assign_labels='discretize', random_state=0)
+        clusterer = SpectralClustering(n_clusters=k, affinity="nearest_neighbors", random_state=0)
         tracemalloc.start()
         start = time.time()
         clusterer.fit(X)
@@ -55,7 +55,7 @@ def run_SpectralClustering_on_data(data_list, K_range, name="", path="data"):
         X, y = data_getter(path=path)
         scores = []
         for K in K_range:
-            clusterer = SpectralClustering(n_clusters=K, assign_labels='discretize', random_state=0)
+            clusterer = SpectralClustering(n_clusters=K, affinity="nearest_neighbors", random_state=0)
             clusterer.fit(X)
 
             if max(clusterer.labels_) - min(clusterer.labels_) > 1:
@@ -63,7 +63,7 @@ def run_SpectralClustering_on_data(data_list, K_range, name="", path="data"):
                 scores.append(score)
             else:
                 scores.append(0.0)
-        clusterer = SpectralClustering(n_clusters=np.argmax(scores) + 2, assign_labels='discretize', random_state=0)
+        clusterer = SpectralClustering(n_clusters=np.argmax(scores) + 2, affinity="nearest_neighbors", random_state=0)
         clusterer.fit(X)
 
         fig, axes = plt.subplots(1, 3, figsize=(18, 4))
@@ -81,7 +81,7 @@ def run_SpectralClustering_on_data(data_list, K_range, name="", path="data"):
 
 
 def run_on_3d_data(X, y, K, data_name, path="data"):
-    clusterer = SpectralClustering(n_clusters=K, assign_labels='discretize', random_state=0)
+    clusterer = SpectralClustering(n_clusters=K, affinity="nearest_neighbors", random_state=0)
     tracemalloc.start()
     start = time.time()
     clusterer.fit(X)
@@ -142,7 +142,7 @@ def evaluation_time_of_working_by_k(
         X, y = test_gaussian_data(total_size, K)
         time_line = []
         for K_for_find in tqdm(finding_k):
-            clusterer = SpectralClustering(n_clusters=K_for_find, assign_labels='discretize', random_state=0)
+            clusterer = SpectralClustering(n_clusters=K_for_find, affinity="nearest_neighbors", random_state=0)
             start = time.time()
             clusterer.fit(X)
             finish = time.time()
@@ -180,7 +180,7 @@ def evaluation_time_of_working_by_size(
         X, y = test_gaussian_data(size, real_k)
         time_line = []
         for K_for_find in tqdm(finding_k):
-            clusterer = SpectralClustering(n_clusters=K_for_find, assign_labels='discretize', random_state=0)
+            clusterer = SpectralClustering(n_clusters=K_for_find, affinity="nearest_neighbors", random_state=0)
             start_alternate = time.time()
             clusterer.fit(X)
             finish_alternate = time.time()
@@ -222,7 +222,7 @@ def evaluation_mem_of_working_by_k(
         X, y = test_gaussian_data(total_size, K)
         mem_line = []
         for K_for_find in tqdm(finding_k):
-            clusterer = SpectralClustering(n_clusters=K_for_find, assign_labels='discretize', random_state=0)
+            clusterer = SpectralClustering(n_clusters=K_for_find, affinity="nearest_neighbors", random_state=0)
 
             tracemalloc.start()
             clusterer.fit(X)
@@ -263,7 +263,7 @@ def evaluation_mem_of_working_by_size(
         X, y = test_gaussian_data(size, real_k)
         mem_line = []
         for K_for_find in tqdm(finding_k):
-            clusterer = SpectralClustering(n_clusters=K_for_find, assign_labels='discretize', random_state=0)
+            clusterer = SpectralClustering(n_clusters=K_for_find, affinity="nearest_neighbors", random_state=0)
 
             tracemalloc.start()
             clusterer.fit(X)
@@ -301,7 +301,7 @@ def check_init_dependency(
         X, y = test_gaussian_data(size, K)
         scores = []
         for i in tqdm(range(iter)):
-            clusterer = SpectralClustering(n_clusters=K, assign_labels='discretize', random_state=i)
+            clusterer = SpectralClustering(n_clusters=K, affinity="nearest_neighbors", random_state=i)
             scores.append(rand_score(clusterer.labels_, y))
         scores_table.append(scores)
 
@@ -335,7 +335,7 @@ def check_stability(
         for i in tqdm(range(iter)):
             X, y = test_gaussian_data_v2(total_size, K, random_state=i)
 
-            clusterer = SpectralClustering(n_clusters=K, assign_labels='discretize', random_state=0)
+            clusterer = SpectralClustering(n_clusters=K, affinity="nearest_neighbors", random_state=0)
 
             origin_score = rand_score(clusterer.labels_, y)
 
@@ -344,7 +344,7 @@ def check_stability(
 
             X[idx] = X[idx] + delta
 
-            clusterer = SpectralClustering(n_clusters=K, assign_labels='discretize', random_state=0)
+            clusterer = SpectralClustering(n_clusters=K, affinity="nearest_neighbors", random_state=0)
 
             delta_score = rand_score(clusterer.labels_, y)
 
@@ -379,8 +379,6 @@ if __name__ == '__main__':
         (NON_SPHERICAL_DATA, NON_SPHERICAL_K, "NON_SPHERICAL"),
         (OTHER_FORMS_DATA, OTHER_FORMS_K, "OTHER_FORMS"),
     ]:
-        # run_MeanShift_on_data_with_K(GAUSSIAN_BLOBS_DATA, [2.0, 2.0, 1.1,
-        #                                                    1.1, 1.0, 1.0,
-        #                                                    2.0, 1.0, 1.0], "GAUSSIAN_BLOBS")
+        run_SpectralClustering_on_data_with_K(NON_SPHERICAL_DATA, NON_SPHERICAL_K, "NON_SPHERICAL")
 
-        run_SpectralClustering_on_data(GAUSSIAN_BLOBS_DATA, list(range(2, 40)))
+        # run_SpectralClustering_on_data(GAUSSIAN_BLOBS_DATA, list(range(2, 40)))
