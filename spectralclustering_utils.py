@@ -302,6 +302,8 @@ def check_init_dependency(
         scores = []
         for i in range(iter):
             clusterer = SpectralClustering(n_clusters=K, affinity="nearest_neighbors", random_state=i)
+            clusterer.fit(X)
+
             scores.append(rand_score(clusterer.labels_, y))
         scores_table.append(scores)
 
@@ -336,6 +338,7 @@ def check_stability(
             X, y = test_gaussian_data_v2(total_size, K, random_state=i)
 
             clusterer = SpectralClustering(n_clusters=K, affinity="nearest_neighbors", random_state=0)
+            clusterer.fit(X)
 
             origin_score = rand_score(clusterer.labels_, y)
 
@@ -345,7 +348,8 @@ def check_stability(
             X[idx] = X[idx] + delta
 
             clusterer = SpectralClustering(n_clusters=K, affinity="nearest_neighbors", random_state=0)
-
+            clusterer.fit(X)
+            
             delta_score = rand_score(clusterer.labels_, y)
 
             scores.append(abs(delta_score - origin_score))
