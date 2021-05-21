@@ -363,7 +363,7 @@ def check_stability(
 
         scores_table.append(scores)
 
-    data = pd.DataFrame(data=np.array(scores_table).T, columns=["K={}".format(K) for K in REAL_K])
+    data = pd.DataFrame(data=np.array(scores_table).T, columns=["K={}".format(K) for K in real_k])
     sns.boxplot(data=data, orient="h", palette="Set2")
 
     plt.savefig(os.path.join(path, "images", "meanshift_stability.png"))
